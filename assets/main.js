@@ -12,21 +12,19 @@ const imageContainer = document.querySelectorAll("#weather-logo");
 const tempNum = document.querySelectorAll('.temp')
 
 //GetInput
+
 const cityBtn = document.querySelector('.btn')
 
-cityBtn.addEventListener("keydown", (event) => {
-  if (event.keyCode === 13) {
-    cityBtn.click();
-  }
-});
+cityBtn.addEventListener('click', getWeather);
 
-cityBtn.addEventListener('click', () => {
-  let cityInput = document.querySelector('.form-control');
-  let cityValue = cityInput.value;
+function getWeather () {
+  event.preventDefault()
+  const cityInput = document.querySelector('.form-control');
+  const cityValue = cityInput.value;
   const apiUrl= 'https://api.weatherapi.com/v1/forecast.json?key=' + apiKey + '&q=' + cityValue + '&aqi=no&days=5';
   console.log(cityValue);
   console.log(apiUrl);
-  cityInput.innerHTML= '';
+  cityInput.value= '';
   fetch(apiUrl)
   .then(response => response.json())
   .then(data => {
@@ -40,8 +38,6 @@ cityBtn.addEventListener('click', () => {
     currentPrecip.innerHTML = `Precipitation: ${currentdayInfo.precip_in}in`
     currentHumidity.innerHTML = `Humidity: ${currentdayInfo.humidity}%`
     currentWind.innerHTML = `Wind Speed: ${Math.floor(currentdayInfo.wind_mph)}mph`
-
-
 
     //5-Day New Info
     //Image
@@ -75,7 +71,30 @@ cityBtn.addEventListener('click', () => {
           windContainer[i].innerHTML = `Wind Speed: ${ Math.floor(dayInfo[i].day.maxwind_mph)}mph`
          }
     });
-});
+
+    //Search History
+    const searchHistory = document.querySelector('.search');
+
+    const words = cityValue.split(' ')
+    for (let i = 0; i < words.length; i++) {
+      words[i] = words[i][0].toUpperCase() + words[i].substr(1).toLowerCase(  );
+    }
+
+    const cityName = words.join(' ');
+
+
+    searchHistory.innerHTML += `<li><button class="btn btn-primary search-btn">${cityName}</button></li>`;
+    const searchBtn = document.querySelectorAll('.search-btn');
+    for (let i = 0; i < searchBtn.length; i++){
+      searchBtn[i].addEventListener('click', () => {
+      cityInput.value = searchBtn[i].textContent;
+      getWeather()
+
+      })
+    }
+};
+
+
 
 
 $(function() {
